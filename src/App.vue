@@ -55,12 +55,22 @@
 //import
 import { ref, onMounted } from 'vue';
 // import { v4 as uuidv4 } from 'uuid';
-import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { 
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  doc, 
+  deleteDoc, 
+  updateDoc,
+  query, 
+  orderBy,
+ } from "firebase/firestore";
 import { db } from '@/firebase';
 
 //firebase ref 
 
 const todoCollectionRef = collection(db, "todos");
+const todoCollectionQuery = query(todoCollectionRef, orderBy("date", "desc"));
 
 //todoList
 const todos = ref ([
@@ -91,7 +101,7 @@ onMounted(async () => {
 // });
 //   todos.value = fbTodos;
 
-onSnapshot(todoCollectionRef, (querySnapshot) => {
+onSnapshot(todoCollectionQuery, (querySnapshot) => {
   const fbTodos = [];
   querySnapshot.forEach((doc) => {
     const todo = {
@@ -116,11 +126,11 @@ const addTodo = async () => {
   //   content: newTodoContent.value,
   //   done: false, 
   // };
- 
   
   await addDoc(todoCollectionRef, {
   content: newTodoContent.value,
   done: false,
+  date: Date.now(),
 });
   newTodoContent.value = "";
 };
