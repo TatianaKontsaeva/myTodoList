@@ -53,10 +53,14 @@
 
 <script setup>
 //import
-import { ref } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
+import { ref, onMounted } from 'vue';
+// import { v4 as uuidv4 } from 'uuid';
+import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { db } from '@/firebase';
 
+//firebase ref 
 
+const todoCollectionRef = collection(db, "todos");
 
 //todoList
 const todos = ref ([
@@ -72,31 +76,69 @@ const todos = ref ([
   // }
 ]);
 
+//get todos
+onMounted(async () => {
+//   let fbTodos = [];
+//   const querySnapshot = await getDocs(collection(db, "todos"));
+//   querySnapshot.forEach((doc) => {
+//   console.log(doc.id, " => ", doc.data());
+//   const todo = {
+//     id: doc.id,
+//     content: doc.data().content,
+//     done: doc.data().done,
+//   };
+//   fbTodos.push(todo);
+// });
+//   todos.value = fbTodos;
+
+onSnapshot(todoCollectionRef, (querySnapshot) => {
+  const fbTodos = [];
+  querySnapshot.forEach((doc) => {
+    const todo = {
+      id: doc.id,
+      content: doc.data().content,
+      done: doc.data().done,
+  }; 
+  fbTodos.push(todo); 
+  });
+  todos.value = fbTodos;
+  
+});
+})
 
 //methods
 
 const newTodoContent = ref (""); //ref получает внутреннее значение и вернет мутируемый реф объект
 
-const addTodo = () => {
-  const newTodo = {
-    id: uuidv4(),
-    content: newTodoContent.value,
-    done: false, 
-  };
-  todos.value.unshift(newTodo);
+const addTodo = async () => {
+  // const newTodo = {
+  //   id: uuidv4(),
+  //   content: newTodoContent.value,
+  //   done: false, 
+  // };
+ 
+  
+  await addDoc(todoCollectionRef, {
+  content: newTodoContent.value,
+  done: false,
+});
   newTodoContent.value = "";
 };
 
 //delete todo
 
-const deleteTodo = (id) => {
-  todos.value = todos.value.filter((todo) => todo.id !== id);
+const deleteTodo = async (id) => {
+  // todos.value = todos.value.filter((todo) => todo.id !== id);
+  await deleteDoc(doc(todoCollectionRef,id));
 }
 
 //toggler
 const toggleDone = (id) => {
   const index = todos.value.findIndex((todo) => todo.id === id);
   todos.value[index].done = !todos.value[index].done;
+  updateDoc(doc(todoCollectionRef,id), {
+  done: !todos.value[index].done
+});
 }
 </script>
 
