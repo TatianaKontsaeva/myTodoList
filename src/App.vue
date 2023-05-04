@@ -15,8 +15,7 @@
         </p>
       </div>
       </form>
-     
-
+    
     
     <div 
     v-for="todo in todos" 
@@ -24,7 +23,7 @@
     class="card mb-5"
     :class="{'has-background-success-light': todo.done}"
     >
-
+      
       <div class="card-content">
         <div class="content">
           <div class="columns is-mobile is-vcentered">
@@ -34,27 +33,25 @@
                 @click="toggleDone(todo.id)"
                 :class="todo.done ? 'is-success' : 'is-light'"
                 class="button is-success is-outlined">
-                &check;
+                &#10004;
               </button>
               <button
                 @click="deleteTodo(todo.id)" 
                 class="button is-danger is-light is-outlined ml-2">
-                &cross;
+                &#10006;
               </button>
             </div>
           </div>
-        
         </div>
-        
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+
 //import
 import { ref, onMounted } from 'vue';
-// import { v4 as uuidv4 } from 'uuid';
 import { 
   collection, 
   onSnapshot, 
@@ -71,49 +68,27 @@ import { db } from '@/firebase';
 
 const todoCollectionRef = collection(db, "todos");
 const todoCollectionQuery = query(todoCollectionRef, orderBy("date", "desc"));
+const filters = ref(['All', 'Open', 'Completed']);
+const activeFilter = ref('All');
 
 //todoList
 const todos = ref ([
-  // {
-  //   id: 'id1',
-  //   content: 'hello',
-  //   done: false 
-  // },
-  // {
-  //   id: 'id2',
-  //   content: 'buy',
-  //   done: true 
-  // }
 ]);
 
 //get todos
 onMounted(async () => {
-//   let fbTodos = [];
-//   const querySnapshot = await getDocs(collection(db, "todos"));
-//   querySnapshot.forEach((doc) => {
-//   console.log(doc.id, " => ", doc.data());
-//   const todo = {
-//     id: doc.id,
-//     content: doc.data().content,
-//     done: doc.data().done,
-//   };
-//   fbTodos.push(todo);
-// });
-//   todos.value = fbTodos;
-
-onSnapshot(todoCollectionQuery, (querySnapshot) => {
-  const fbTodos = [];
-  querySnapshot.forEach((doc) => {
-    const todo = {
-      id: doc.id,
-      content: doc.data().content,
-      done: doc.data().done,
-  }; 
-  fbTodos.push(todo); 
+  onSnapshot(todoCollectionQuery, (querySnapshot) => {
+    const fbTodos = [];
+    querySnapshot.forEach((doc) => {
+      const todo = {
+        id: doc.id,
+        content: doc.data().content,
+        done: doc.data().done,
+    }; 
+    fbTodos.push(todo); 
+    });
+    todos.value = fbTodos;
   });
-  todos.value = fbTodos;
-  
-});
 })
 
 //methods
@@ -121,12 +96,6 @@ onSnapshot(todoCollectionQuery, (querySnapshot) => {
 const newTodoContent = ref (""); //ref получает внутреннее значение и вернет мутируемый реф объект
 
 const addTodo = async () => {
-  // const newTodo = {
-  //   id: uuidv4(),
-  //   content: newTodoContent.value,
-  //   done: false, 
-  // };
-  
   await addDoc(todoCollectionRef, {
   content: newTodoContent.value,
   done: false,
@@ -136,7 +105,6 @@ const addTodo = async () => {
 };
 
 //delete todo
-
 const deleteTodo = async (id) => {
   // todos.value = todos.value.filter((todo) => todo.id !== id);
   await deleteDoc(doc(todoCollectionRef,id));
@@ -150,17 +118,24 @@ const toggleDone = (id) => {
   done: !todos.value[index].done
 });
 }
+
+
+
+
+  
+
 </script>
 
 
 <style>
 @import "bulma/css/bulma.min.css";
 .todo-wrapper {
-  max-width: 800px;
-  padding: 20px;
+  max-width: 900px;
+  padding: 40px;
   margin: 0 auto;
-  border: 1px solid #0a0a0a;
-  background: #1e1e1e;
+  border: 1px solid #003B46;
+  border-radius: 20px;
+  background: #34554d;
 }
 .line-through {
   text-decoration: line-through;
