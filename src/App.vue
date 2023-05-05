@@ -15,15 +15,12 @@
         </p>
       </div>
       </form>
-    
-    
     <div 
     v-for="todo in todos" 
     :key="todo.id" 
     class="card mb-5"
     :class="{'has-background-success-light': todo.done}"
     >
-      
       <div class="card-content">
         <div class="content">
           <div class="columns is-mobile is-vcentered">
@@ -49,7 +46,6 @@
 </template>
 
 <script setup>
-
 //import
 import { ref, onMounted } from 'vue';
 import { 
@@ -65,7 +61,6 @@ import {
 import { db } from '@/firebase';
 
 //firebase ref 
-
 const todoCollectionRef = collection(db, "todos");
 const todoCollectionQuery = query(todoCollectionRef, orderBy("date", "desc"));
 const filters = ref(['All', 'Open', 'Completed']);
@@ -92,9 +87,7 @@ onMounted(async () => {
 })
 
 //methods
-
 const newTodoContent = ref (""); //ref получает внутреннее значение и вернет мутируемый реф объект
-
 const addTodo = async () => {
   await addDoc(todoCollectionRef, {
   content: newTodoContent.value,
@@ -118,14 +111,7 @@ const toggleDone = (id) => {
   done: !todos.value[index].done
 });
 }
-
-
-
-
-  
-
 </script>
-
 
 <style>
 @import "bulma/css/bulma.min.css";
@@ -140,5 +126,4 @@ const toggleDone = (id) => {
 .line-through {
   text-decoration: line-through;
 }
-
 </style>
