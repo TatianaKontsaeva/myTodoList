@@ -63,12 +63,9 @@ import { db } from '@/firebase';
 //firebase ref 
 const todoCollectionRef = collection(db, "todos");
 const todoCollectionQuery = query(todoCollectionRef, orderBy("date", "desc"));
-const filters = ref(['All', 'Open', 'Completed']);
-const activeFilter = ref('All');
 
 //todoList
-const todos = ref ([
-]);
+const todos = ref ([]);
 
 //get todos
 onMounted(async () => {
